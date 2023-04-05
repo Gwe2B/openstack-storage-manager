@@ -1,0 +1,38 @@
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+button {
+  text-transform: uppercase;
+}
+
+mat-card-content {
+  height: 100%;
+}
+
+.dashed-button {
+  width: 100%;
+  height: 100%;
+  font-size: larger;
+  text-transform: uppercase;
+  border: thick dashed #767676;
+  color: #767676;
+  background: transparent;
+  outline: none;
+
+  &:hover {
+    background: #ccc;
+  }
+}
+
+.grid-container {
+  margin: 16px;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-columns: minmax(100px, auto);
+  grid-auto-rows: minmax(100px, auto);
+  grid-gap: 10px;
+}

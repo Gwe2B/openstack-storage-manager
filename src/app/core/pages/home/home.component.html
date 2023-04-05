@@ -1,0 +1,32 @@
+<div class="grid-container">
+  <mat-card *ngFor="let identity of openstackIdentities$ | async">
+    <mat-card-header>
+      <mat-card-title>{{ identity.name }}</mat-card-title>
+      <mat-card-subtitle>{{ identity.id }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="warn"
+        (click)="onSuppressIdentityClick(identity)"
+      >
+        supprimer
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onUseIdentityClick(identity)"
+      >
+        connexion
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-content>
+      <button class="dashed-button" (click)="onAddIdentityClick()">
+        + ADD
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

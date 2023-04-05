@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>Nouvel identifiant</h2>
+
+<form mat-dialog-content [formGroup]="identifierForm">
+  <mat-form-field appearance="fill">
+    <mat-label>Nom</mat-label>
+    <input matInput formControlName="name" />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Projet</mat-label>
+    <input type="text" matInput formControlName="project" />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Nom d'utilisateur</mat-label>
+    <input type="text" matInput formControlName="username" />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Mot de passe</mat-label>
+    <input type="password" matInput formControlName="password" />
+  </mat-form-field>
+</form>
+<div mat-dialog-actions>
+  <button mat-raised-button color="secondary" (click)="onCancel()">
+    Annuler
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    [mat-dialog-close]="identifierForm.value"
+    [disabled]="identifierForm.invalid"
+  >
+    Enregistrer
+  </button>
+</div>
