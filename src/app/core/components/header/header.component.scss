@@ -1,0 +1,10 @@
+@import "variables";
+
+ul {
+  list-style: none;
+}
+
+li {
+  display: inline-block;
+  margin-right: $margin-small;
+}

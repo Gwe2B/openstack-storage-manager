@@ -1,0 +1,32 @@
+<div class="tree">
+  <ul>
+    <li>
+      <i class="fa fa-folder-open"></i>
+      {{ tree.name }}
+      <ul>
+        <ng-container
+          *ngFor="let node of tree.getChildrens()"
+          [ngTemplateOutlet]="treeTemplate"
+          [ngTemplateOutletContext]="{ $implicit: node }"
+        ></ng-container>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<ng-template #treeTemplate let-data>
+  <li class="node">
+    <i class="fa" [ngClass]="data.isLeaf() ? 'fa-file' : 'fa-folder-open'">
+    </i>
+    {{ data.name }}
+    <ng-container *ngIf="!data.isLeaf()">
+      <ul>
+        <ng-container
+        *ngFor="let child of data.getChildrens()"
+        [ngTemplateOutlet]="treeTemplate"
+        [ngTemplateOutletContext]="{ $implicit: child }"
+        ></ng-container>
+      </ul>
+    </ng-container>
+  </li>
+</ng-template>
