@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AddIdentifierFormComponent } from '../add-identifier-form/add-identifier-form.component';
 import { v4 as uuid } from 'uuid';
+import { OpenstackTokensService } from 'src/app/shared/services/openstack-tokens.service';
 
 @Component({
   templateUrl: './home.component.html',
@@ -15,7 +16,8 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private openstackService: OpenstackService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private ovhTokenService: OpenstackTokensService, // TODO: remove this
   ) {}
 
   ngOnInit(): void {
@@ -46,5 +48,7 @@ export class HomeComponent implements OnInit {
     this.openstackService.removeIdentifier(identity.id);
   }
 
-  onUseIdentityClick(identity: OpenstackIdentifier): void {}
+  onUseIdentityClick(identity: OpenstackIdentifier): void {
+    this.ovhTokenService.getOpenstackToken(identity);
+  }
 }
