@@ -1,9 +1,23 @@
 {
   "name": "openstack-storage-manager",
   "version": "0.0.0",
+  "main": "http://localhost:8964",
+  "node-remote": "http://localhost:8964",
+  "chromium-args": "--enable-spell-checking",
+  "window": {
+    "frame": true,
+    "toolbar": true,
+    "resizable": true,
+    "min_width": 900,
+    "min_height": 600,
+    "fullscreen": false
+  },
+  "browser": {
+    "crypto": false
+  },
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "concurrently \"ng serve --port=8964\" \"nw .\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -32,12 +46,14 @@
     "@angular/compiler-cli": "^15.2.0",
     "@types/jasmine": "~4.3.0",
     "@types/uuid": "^9.0.1",
+    "concurrently": "^8.0.1",
     "jasmine-core": "~4.5.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
+    "nw": "^0.75.0-sdk",
     "typescript": "~4.9.4"
   }
 }
