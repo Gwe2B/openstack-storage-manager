@@ -1,9 +1,13 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import axios from 'axios';
-import { Observable, map, of } from 'rxjs';
+import { Observable, map, of, tap } from 'rxjs';
 import { OpenstackIdentifier } from 'src/app/core/models/openstack-identifier';
-import { OpenstackToken } from 'src/app/core/models/openstack-token';
+import {
+  Endpoint,
+  OSCatalogEntry,
+  OpenstackToken,
+} from 'src/app/core/models/openstack-token';
 
 @Injectable({
   providedIn: 'root',
@@ -16,116 +20,66 @@ export class OpenstackTokensService {
   constructor(private http: HttpClient) {}
 
   getOpenstackToken(identity: OpenstackIdentifier): Observable<OpenstackToken> {
+    const requestBody = {
+      auth: {
+        identity: {
+          methods: ['password'],
+          password: {
+            user: {
+              name: identity.username,
+              domain: { id: 'default' },
+              password: identity.password,
+            },
+          },
+        },
+        scope: {
+          project: {
+            name: identity.project,
+            domain: { id: 'default' },
+          },
+        },
+      },
+    };
+
+    const requestHeaders = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
     let result: any = localStorage.getItem(
       OpenstackTokensService.LOCALSTORAGE_PREFIX + identity.id
     );
-    console.log(result);
+
     if (result !== 'undefined' && result !== undefined && result !== null) {
       let data: OpenstackToken = JSON.parse(result);
       let expireDate = new Date(data.expires);
       if (expireDate.getTime() < Date.now()) {
-        /*let dataToReturn;
-      await Axios.post(process.env.OVH_AUTH_ENDPOINT, requestBody, config)
-      .then((response) => {
-        const endpoints = response.data.token['catalog'].find((element) => element.type == 'object-store').endpoints;
-        dataToReturn = {
-          token: response.headers['x-subject-token'],
-          url: endpoints.filter((element) => element.interface == 'public'),
-          expires: response.data.token.expires_at
-        };
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-
-      return dataToReturn;*/
-        // result = this.httpService
-        //   .post({
-        //     method: 'generateOvhToken',
-        //     params: {
-        //       p: '',
-        //       e: '',
-        //       h: '',
-        //     },
-        //   })
-        //   .pipe(
-        //     tap((response) =>
-        //       localStorage.setItem('ovhToken', JSON.stringify(response))
-        //     ),
-        //     catchError((err) => this.handleError(err))
-        //   );
+        result = this.http.post(
+          OpenstackTokensService.OPENSTACK_TOKEN_ENDPOINT,
+          requestBody,
+          { headers: requestHeaders, observe: 'response' }
+        );
       } else {
         result = of(JSON.parse(result));
       }
     } else {
-      // this.http
-      //   .post(
-      //     OpenstackTokensService.OPENSTACK_TOKEN_ENDPOINT,
-      //     {
-      //       auth: {
-      //         identity: {
-      //           methods: ['password'],
-      //           password: {
-      //             user: {
-      //               name: identity.username,
-      //               domain: { id: 'default' },
-      //               password: identity.password,
-      //             },
-      //           },
-      //         },
-      //         scope: {
-      //           project: {
-      //             name: identity.project,
-      //             domain: { id: 'default' },
-      //           },
-      //         },
-      //       },
-      //     },
-      //     {
-      //       headers: { 'Content-Type': 'application/json', Origin: 'http://localhost:4200' },
-      //       observe: 'response',
-      //     }
-      //   )
-      //   .pipe(
-      //     map((response) => {
-      //       console.log(response);
-      //     })
-      //   )
-      //   .subscribe();
-      let axiosInstance = axios.create();
-      axiosInstance.post(
+      result = this.http.post(
         OpenstackTokensService.OPENSTACK_TOKEN_ENDPOINT,
-        {
-          auth: {
-            identity: {
-              methods: ['password'],
-              password: {
-                user: {
-                  name: identity.username,
-                  domain: { id: 'default' },
-                  password: identity.password,
-                },
-              },
-            },
-            scope: {
-              project: {
-                name: identity.project,
-                domain: { id: 'default' },
-              },
-            },
-          },
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Origin: 'http://localhost:4200',
-          },
-        }
-      ).then((response) => {
-        console.log(response);
-      });
+        requestBody,
+        { headers: requestHeaders, observe: 'response' }
+      );
     }
 
-    return result;
+    return result.pipe(
+      map((response: HttpResponse<any>) => {
+        return {
+          token: response.headers.get('x-subject-token'),
+          expires: response.body.token.expires_at,
+          url: response.body.token.catalog
+            .filter((entry: OSCatalogEntry) => entry.type === 'object-store')
+            .map((entry: OSCatalogEntry) => entry.endpoints)[0]
+            .filter((endpoint: Endpoint) => endpoint.interface === 'public'),
+        };
+      })
+    );
   }
 }

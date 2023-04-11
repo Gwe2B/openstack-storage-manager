@@ -11,3 +11,18 @@ export interface OpenstackToken {
 }
 
 export interface OpenstackTokenRequireResponse {}
+
+export interface OSCatalogEntry {
+  endpoints: Endpoint[];
+  type: string;
+  id: string;
+  name: string;
+}
+
+export interface Endpoint {
+  id: string;
+  interface: string;
+  region: string;
+  region_id: string;
+  url: string;
+}

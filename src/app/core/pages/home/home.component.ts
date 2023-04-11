@@ -49,6 +49,7 @@ export class HomeComponent implements OnInit {
   }
 
   onUseIdentityClick(identity: OpenstackIdentifier): void {
-    this.ovhTokenService.getOpenstackToken(identity);
+    let token$ = this.ovhTokenService.getOpenstackToken(identity);
+    token$.subscribe()
   }
 }
