@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { OpenstackIdentifier } from '../../models/openstack-identifier';
 import { OpenstackService } from 'src/app/shared/services/openstack.service';
 import { ObjectStorageService } from 'src/app/shared/services/object-storage.service';
-import { TreeFolder } from '../../models/directories-tree';
+import { TreeElement, TreeFolder } from '../../models/directories-tree';
 
 @Component({
   templateUrl: './manager.component.html',
@@ -33,5 +33,19 @@ export class ManagerComponent implements OnInit {
     rootFileList.subscribe((tree) => {
       this.folderTree = tree;
     });
+  }
+
+  onNodeClick(node: TreeElement): void {
+    if (!node.isLeaf()) {
+      let buffer = <TreeFolder>node;
+
+      if (buffer) {
+        this.objectStorageService
+          .getFileList(buffer.getPath(), this.identity, buffer)
+          .subscribe((response) => {
+            buffer.parent?.replaceNode(buffer, response);
+          });
+      }
+    }
   }
 }

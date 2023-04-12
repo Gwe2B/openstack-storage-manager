@@ -1,9 +1,9 @@
 <div class="tree">
   <ul>
-    <li>
-      <i class="fa fa-folder-open"></i>
+    <li (click)="onFolderClick($event)">
+      <i class="fa fa-folder"></i>
       {{ tree.name }}
-      <ul>
+      <ul class="closed">
         <ng-container
           *ngFor="let node of tree.getChildrens()"
           [ngTemplateOutlet]="treeTemplate"
@@ -15,12 +15,12 @@
 </div>
 
 <ng-template #treeTemplate let-data>
-  <li class="node">
-    <i class="fa" [ngClass]="data.isLeaf() ? 'fa-file' : 'fa-folder-open'">
+  <li class="node" (click)="onFolderClick($event, data)">
+    <i class="fa" [ngClass]="data.isLeaf() ? 'fa-file' : 'fa-folder'">
     </i>
     {{ data.name }}
     <ng-container *ngIf="!data.isLeaf()">
-      <ul>
+      <ul class="closed">
         <ng-container
         *ngFor="let child of data.getChildrens()"
         [ngTemplateOutlet]="treeTemplate"

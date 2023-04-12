@@ -1,4 +1,8 @@
 <div class="main-container">
-    <app-directories-tree [tree]="folderTree" class="test"></app-directories-tree>
-    <div class="container"></div>
+  <app-directories-tree
+    [tree]="folderTree"
+    (nodeClicked)="onNodeClick($event)"
+    class="test"
+  ></app-directories-tree>
+  <div class="container"></div>
 </div>

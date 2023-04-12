@@ -5,11 +5,44 @@ export abstract class TreeElement {
 
   getPath(): string {
     let result = '';
+    
     if (this.parent) {
       result = this.parent.getPath();
     }
 
-    return result + '/' + this.name;
+    if(result.endsWith('/')) {
+      result = result + (this.name !== '/' ? this.name : '');
+    } else {
+      result = result + '/' + (this.name !== '/' ? this.name : '')
+    }
+
+    return result;
+  }
+
+  findByPath(path: string): TreeElement | null {
+    let pathSegments = path.split('/').filter(segment => segment !== '');
+    let result: TreeElement | null = null;
+
+    if(pathSegments.length > 1) {
+      let segment = pathSegments.shift();
+  
+      if (segment) {
+        if (segment.length <= 0) {
+          segment = pathSegments.shift();
+        }
+        
+        if(segment) {
+          let buffer = this.find(segment);
+          if(buffer) {
+            result = buffer.findByPath(pathSegments.join('/'))
+          }
+        }
+      }
+    } else if (pathSegments.length > 0) {
+      result = this.find(pathSegments[0]);
+    }
+
+    return result;
   }
 
   abstract find(name: string): TreeElement | null;
@@ -47,6 +80,18 @@ export class TreeFolder extends TreeElement {
 
   public get count(): number | undefined {
     return this._count;
+  }
+
+  replaceNode(oldNode: TreeElement, newNode: TreeElement): boolean {
+    let result = false;
+    let nodeIndex = this.content.indexOf(this.find(oldNode.name)!);
+
+    if(nodeIndex > -1) {
+      this.content[nodeIndex] = newNode;
+      result = true;
+    }
+
+    return result;
   }
 
   getChildrens(): TreeElement[] {
