@@ -5,20 +5,15 @@
       <mat-card-subtitle>{{ identity.id }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-actions>
-      <button
-        mat-raised-button
-        color="warn"
-        (click)="onSuppressIdentityClick(identity)"
-      >
+      <button mat-raised-button color="warn" (click)="onSuppressIdentityClick(identity)">
         supprimer
       </button>
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="onUseIdentityClick(identity)"
-      >
-        connexion
-      </button>
+      <button-loader color="primary" spinnerColor="accent" [label]="{
+        default: 'Connexion',
+        loading: 'Chargement...',
+        error: 'Erreur',
+        success: 'Connecter'
+      }" (click)="onUseIdentityClick(identity, btn)" #btn></button-loader>
     </mat-card-actions>
   </mat-card>
 

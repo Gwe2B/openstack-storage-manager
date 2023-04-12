@@ -1,23 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { OpenstackService } from 'src/app/shared/services/openstack.service';
 import { OpenstackIdentifier } from '../../models/openstack-identifier';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AddIdentifierFormComponent } from '../add-identifier-form/add-identifier-form.component';
 import { v4 as uuid } from 'uuid';
 import { OpenstackTokensService } from 'src/app/shared/services/openstack-tokens.service';
+import { ButtonLoaderComponent } from 'src/app/shared/components/button-loader/button-loader.component';
+import { Router } from '@angular/router';
 
 @Component({
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
+  buttonState = 'default';
+
   openstackIdentities$!: Observable<OpenstackIdentifier[]>;
 
   constructor(
     private openstackService: OpenstackService,
     private dialog: MatDialog,
-    private ovhTokenService: OpenstackTokensService, // TODO: remove this
+    private ovhTokenService: OpenstackTokensService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -48,8 +53,24 @@ export class HomeComponent implements OnInit {
     this.openstackService.removeIdentifier(identity.id);
   }
 
-  onUseIdentityClick(identity: OpenstackIdentifier): void {
+  onUseIdentityClick(
+    identity: OpenstackIdentifier,
+    btn: ButtonLoaderComponent
+  ): void {
     let token$ = this.ovhTokenService.getOpenstackToken(identity);
-    token$.subscribe()
+    token$
+      .pipe(
+        catchError((err, caught) => {
+          btn.state = 'error';
+          return of(null);
+        })
+      )
+      .subscribe(() => {
+        btn.state = 'success';
+        setTimeout(() => {
+          this.router.navigateByUrl('/manager/' + identity.id);
+          btn.state = 'default';
+        }, 1000);
+      });
   }
 }

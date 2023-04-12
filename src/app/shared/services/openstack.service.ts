@@ -39,7 +39,7 @@ export class OpenstackService {
       .getValue()
       .filter((item) => item.id != identifierId);
     this.identifiers$.next(current);
-    
+
     localStorage.setItem(
       OpenstackService.LOCALESTORAGE_KEY,
       JSON.stringify(current)
@@ -50,5 +50,11 @@ export class OpenstackService {
 
   getIdentifiers(): Observable<OpenstackIdentifier[]> {
     return this.identifiers$.asObservable();
+  }
+
+  getIdentifier(id: string): OpenstackIdentifier {
+    return this.identifiers$.value.filter(
+      (identifier) => identifier.id === id
+    )[0];
   }
 }

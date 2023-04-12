@@ -1,0 +1,6 @@
+<button mat-raised-button [color]="getColor()" [disabled]="disabled" (click)="onClick()">
+  <mat-icon *ngIf="state === 'loading'">
+    <mat-spinner [color]="spinnerColor" diameter="18"></mat-spinner>
+  </mat-icon>
+  {{ getLabel() }}
+</button>
