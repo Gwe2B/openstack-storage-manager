@@ -1,0 +1,19 @@
+.test {
+    background-color: red;
+}
+
+.main-container {
+    width: 100vw;
+    height: 91.99vh;
+    padding: 16px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+.container {
+    background-color: blue;
+    flex-grow: 1;
+}
