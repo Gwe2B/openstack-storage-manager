@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TreeElement, TreeFolder } from 'src/app/core/models/directories-tree';
+import { TreeElement, TreeFile, TreeFolder } from 'src/app/core/models/directories-tree';
+import { GetMimeIconPipe } from '../../pipes/get-mime-icon.pipe';
 
 @Component({
   selector: 'app-directories-tree',
@@ -11,6 +12,20 @@ export class DirectoriesTreeComponent {
   @Input() tree: TreeElement = new TreeFolder('/');
 
   @Output() nodeClicked = new EventEmitter<TreeElement>();
+
+  getIcon(node: TreeElement): string {
+    let result = 'fa fa-folder';
+    if(node.isLeaf()) {
+      let leaf = <TreeFile>node;
+      if(leaf.content_type) {
+        result = GetMimeIconPipe.getMimeIcon(leaf.content_type);
+      } else {
+        result = 'fa fa-file';
+      }
+    }
+
+    return result;
+  }
 
   onFolderClick(event: MouseEvent, data: TreeElement | null = null) {
     event.stopPropagation();

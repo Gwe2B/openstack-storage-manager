@@ -16,7 +16,7 @@
 
 <ng-template #treeTemplate let-data>
   <li class="node" (click)="onFolderClick($event, data)">
-    <i class="fa" [ngClass]="data.isLeaf() ? 'fa-file' : 'fa-folder'">
+    <i [ngClass]="getIcon(data)">
     </i>
     {{ data.name }}
     <ng-container *ngIf="!data.isLeaf()">
