@@ -3,7 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { OpenstackIdentifier } from '../../models/openstack-identifier';
 import { OpenstackService } from 'src/app/shared/services/openstack.service';
 import { ObjectStorageService } from 'src/app/shared/services/object-storage.service';
-import { TreeElement, TreeFolder } from '../../models/directories-tree';
+import {
+  TreeElement,
+  TreeFile,
+  TreeFolder,
+} from '../../models/directories-tree';
+import { finalize } from 'rxjs';
 
 @Component({
   templateUrl: './manager.component.html',
@@ -11,6 +16,10 @@ import { TreeElement, TreeFolder } from '../../models/directories-tree';
 })
 export class ManagerComponent implements OnInit {
   private identity!: OpenstackIdentifier;
+
+  isLoading: boolean = false;
+  loadingProgress: number = 0;
+
   folderTree!: TreeFolder;
 
   constructor(
@@ -44,6 +53,32 @@ export class ManagerComponent implements OnInit {
           .getFileList(buffer.getPath(), this.identity, buffer)
           .subscribe((response) => {
             buffer.parent?.replaceNode(buffer, response);
+          });
+      }
+    }
+  }
+
+  onNodeDblClick(node: TreeElement): void {
+    if (node.isLeaf()) {
+      let buffer = <TreeFile>node;
+
+      if (buffer) {
+        this.isLoading = true;
+        this.loadingProgress = 0;
+
+        this.objectStorageService
+          .getFile(buffer.getPath(), this.identity)
+          .pipe(
+            finalize(() => {
+              this.isLoading = false;
+            })
+          )
+          .subscribe((blobFile) => {
+            if (blobFile.type && blobFile.type === 3) {
+              this.loadingProgress = (blobFile.loaded * 100) / blobFile.total;
+            } else if (blobFile.body) {
+              // TODO
+            }
           });
       }
     }

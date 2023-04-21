@@ -15,7 +15,7 @@
 </div>
 
 <ng-template #treeTemplate let-data>
-  <li class="node" (click)="onFolderClick($event, data)">
+  <li class="node" (click)="onFolderClick($event, data)" (dblclick)="onDblClick($event, data)">
     <i [ngClass]="getIcon(data)">
     </i>
     {{ data.name }}

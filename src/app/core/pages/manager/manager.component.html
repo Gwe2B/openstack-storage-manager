@@ -2,7 +2,16 @@
   <app-directories-tree
     [tree]="folderTree"
     (nodeClicked)="onNodeClick($event)"
-    class="test"
+    (nodeDblClicked)="onNodeDblClick($event)"
+    class="tree-container"
   ></app-directories-tree>
-  <div class="container"></div>
+  <div class="container">
+    <div class="loader-frame" *ngIf="isLoading">
+      <mat-progress-spinner
+        mode="determinate"
+        color="primary"
+        [value]="loadingProgress"
+      ></mat-progress-spinner>
+    </div>
+  </div>
 </div>
