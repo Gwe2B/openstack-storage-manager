@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OpenstackIdentifier } from '../../models/openstack-identifier';
 import { OpenstackService } from 'src/app/shared/services/openstack.service';
@@ -16,6 +16,8 @@ import { finalize } from 'rxjs';
 })
 export class ManagerComponent implements OnInit {
   private identity!: OpenstackIdentifier;
+
+  @ViewChild('previewContainer') previewContainer!: ElementRef<HTMLElement>;
 
   isLoading: boolean = false;
   loadingProgress: number = 0;
@@ -78,6 +80,14 @@ export class ManagerComponent implements OnInit {
               this.loadingProgress = (blobFile.loaded * 100) / blobFile.total;
             } else if (blobFile.body) {
               // TODO
+              if(blobFile.body.type.match(/^image/)) {
+                const urlCreator = window.URL || window.webkitURL;
+                let imgUrl = urlCreator.createObjectURL(blobFile.body);
+                let imgTag = document.createElement('img');
+                imgTag.src = imgUrl;
+                this.previewContainer.nativeElement.appendChild(imgTag);
+              }
+              
             }
           });
       }
